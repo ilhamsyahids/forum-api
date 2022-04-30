@@ -35,6 +35,7 @@ jobs:
       - name: Install, migrate, and test
         run: |
           npm install
+          npm run lint
           npm run migrate up
           npm run test
         env:

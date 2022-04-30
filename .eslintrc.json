@@ -10,6 +10,10 @@
     "ecmaVersion": 12
   },
   "rules": {
+    "no-unused-vars": [
+      "error",
+      { "vars": "all", "args": "none", "ignoreRestSiblings": false }
+    ],
     "linebreak-style": "off",
     "no-underscore-dangle": "off",
     "class-methods-use-this": "off",
