@@ -1,11 +1,12 @@
-const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
-const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
+const pool = require('../../database/postgres/pool');
 const container = require('../../container');
 const createServer = require('../createServer');
-const pool = require('../../database/postgres/pool');
 const AuthenticationTokenManager = require('../../../Applications/security/AuthenticationTokenManager');
+const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
+const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const ThreadCommentsTableTestHelper = require('../../../../tests/ThreadCommentsTableTestHelper');
 const ThreadCommentRepliesTableTestHelper = require('../../../../tests/ThreadCommentRepliesTableTestHelper');
+const ThreadCommentLikesTableTestHelper = require('../../../../tests/ThreadCommentLikesTableTestHelper');
 
 describe('/threads endpoint', () => {
   afterAll(async () => {
@@ -13,10 +14,11 @@ describe('/threads endpoint', () => {
   });
 
   afterEach(async () => {
-    await ThreadCommentRepliesTableTestHelper.cleanTable();
-    await ThreadCommentsTableTestHelper.cleanTable();
-    await ThreadsTableTestHelper.cleanTable();
     await UsersTableTestHelper.cleanTable();
+    await ThreadsTableTestHelper.cleanTable();
+    await ThreadCommentsTableTestHelper.cleanTable();
+    await ThreadCommentRepliesTableTestHelper.cleanTable();
+    await ThreadCommentLikesTableTestHelper.cleanTable();
   });
 
   beforeEach(async () => {
@@ -711,6 +713,94 @@ describe('/threads endpoint', () => {
         c.replies.map((r) => r.content),
       );
       expect(replyContents.flat(Infinity)).toContain('**balasan telah dihapus**');
+    });
+  });
+
+  describe('when PUT /threads/{threadId}/comments/{commentId}/likes', () => {
+    beforeEach(async () => {
+      await ThreadsTableTestHelper.addThread({ id: 'thread-123' });
+      await ThreadCommentsTableTestHelper.addComment({
+        id: 'comment-123',
+        threadId: 'thread-123',
+        userId: 'user-123',
+      });
+    });
+
+    it('should response with 401 when not authorize', async () => {
+      const server = await createServer(container);
+
+      const response = await server.inject({
+        method: 'PUT',
+        url: '/threads/thread-123/comments/comment-123/likes',
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(responseJson.statusCode).toEqual(401);
+      expect(responseJson.error).toEqual('Unauthorized');
+      expect(responseJson.message).toEqual('Missing authentication');
+    });
+
+    it('should response with 404 when thread not found', async () => {
+      const server = await createServer(container);
+      const authTokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await authTokenManager.createAccessToken({
+        username: 'ilham',
+        id: 'user-123',
+      });
+
+      const response = await server.inject({
+        method: 'PUT',
+        url: '/threads/thread-0/comments/comment-123/likes',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.message).toEqual('Thread tidak valid');
+    });
+
+    it('should response with 404 when comment not found', async () => {
+      const server = await createServer(container);
+      const authTokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await authTokenManager.createAccessToken({
+        username: 'ilham',
+        id: 'user-123',
+      });
+
+      const response = await server.inject({
+        method: 'PUT',
+        url: '/threads/thread-123/comments/comment-333/likes',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.message).toEqual('Comment tidak valid');
+    });
+
+    it('should response with 200 when likes service succesfully', async () => {
+      const server = await createServer(container);
+      const authTokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const accessToken = await authTokenManager.createAccessToken({
+        username: 'ilham',
+        id: 'user-123',
+      });
+
+      const response = await server.inject({
+        method: 'PUT',
+        url: '/threads/thread-123/comments/comment-123/likes',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
     });
   });
 });
