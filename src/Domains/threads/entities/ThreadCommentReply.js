@@ -1,29 +1,33 @@
 class ThreadCommentReply {
-    constructor(payload) {
-        this._validate(payload);
+  constructor(payload) {
+    this._validate(payload);
 
-        const { id, content, username, date, isDeleted, threadCommentId } = payload;
-        this.id = id;
-        this.content = content;
-        this.username = username;
-        this.date = date;
-        this.isDeleted = isDeleted;
-        this.threadCommentId = threadCommentId;
+    const {
+      id, content, username, date, isDeleted, threadCommentId,
+    } = payload;
+    this.id = id;
+    this.content = content;
+    this.username = username;
+    this.date = date;
+    this.isDeleted = isDeleted;
+    this.threadCommentId = threadCommentId;
+  }
+
+  _validate({
+    id, content, username, date, isDeleted, threadCommentId,
+  }) {
+    if (!content || !username || !id || !date || isDeleted === undefined || !threadCommentId) {
+      throw new Error('THREAD_COMMENT_REPLY.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
-    _validate({ id, content, username, date, isDeleted, threadCommentId }) {
-        if (!content || !username || !id || !date || isDeleted === undefined || !threadCommentId) {
-            throw new Error('THREAD_COMMENT_REPLY.NOT_CONTAIN_NEEDED_PROPERTY');
-        }
-
-        if (
-            typeof content !== 'string' || typeof username !== 'string' ||
-            typeof id !== 'string' || typeof date !== 'string' ||
-            typeof isDeleted !== 'boolean' || typeof threadCommentId !== 'string'
-        ) {
-            throw new Error('THREAD_COMMENT_REPLY.WRONG_DATA_TYPE');
-        }
+    if (
+      typeof content !== 'string' || typeof username !== 'string'
+            || typeof id !== 'string' || typeof date !== 'string'
+            || typeof isDeleted !== 'boolean' || typeof threadCommentId !== 'string'
+    ) {
+      throw new Error('THREAD_COMMENT_REPLY.WRONG_DATA_TYPE');
     }
+  }
 }
 
 module.exports = ThreadCommentReply;
