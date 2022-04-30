@@ -1,5 +1,7 @@
 # Forum API
 
+[![Continuous Integration](https://github.com/ilhamsyahids/forum-api/actions/workflows/ci.yml/badge.svg)](https://github.com/ilhamsyahids/forum-api/actions/workflows/ci.yml)
+
 ## Features
 
 - Clean Architecture
