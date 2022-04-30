@@ -7,7 +7,7 @@ describe('ThreadCommentLike', () => {
     };
 
     expect(() => new ThreadCommentLike(payload)).toThrowError(
-      'THREAD_COMMENT_LIKE.NOT_CONTAIN_NEEDED_PROPERTYt',
+      'THREAD_COMMENT_LIKE.NOT_CONTAIN_NEEDED_PROPERTY',
     );
   });
 
