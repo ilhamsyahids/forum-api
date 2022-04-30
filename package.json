@@ -9,6 +9,8 @@
     "test": "jest --setupFiles dotenv/config -i",
     "test:watch:change": "jest --watch --setupFiles dotenv/config -i",
     "test:watch": "jest --watchAll --coverage --setupFiles dotenv/config -i",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix",
     "migrate": "node-pg-migrate",
     "migrate:test": "node-pg-migrate -f config/database/test.json"
   },
@@ -20,6 +22,7 @@
     "@hapi/jwt": "^2.0.1",
     "bcrypt": "^5.0.1",
     "dotenv": "^10.0.0",
+    "eslint-plugin-jest": "^26.1.5",
     "instances-container": "^2.0.3",
     "nanoid": "^3.1.23",
     "pg": "^8.6.0"

@@ -5,45 +5,45 @@ const AddReplyUseCase = require('../AddReplyUseCase');
 const ThreadCommentReplyCreated = require('../../../Domains/threads/entities/ThreadCommentReplyCreated');
 
 describe('AddReplyUseCase', () => {
-    it('should add reply', async () => {
-        const userId = 'user-123';
-        const commentId = 'comment-123';
-        const content = 'thread comment reply content';
-        const threadId = 'thread-123';
+  it('should add reply', async () => {
+    const userId = 'user-123';
+    const commentId = 'comment-123';
+    const content = 'thread comment reply content';
+    const threadId = 'thread-123';
 
-        const expected = new ThreadCommentReplyCreated({
-            id: 'reply-123',
-            content: 'thread comment reply content',
-            owner: 'user-123',
-        });
-
-        const mockThreadRepo = new ThreadRepository();
-        mockThreadRepo.verifyThread = jest.fn().mockImplementation(() => Promise.resolve);
-
-        const mockCommentRepo = new ThreadCommentRepository();
-        mockCommentRepo.verifyComment = jest.fn().mockImplementation(() => Promise.resolve);
-
-        const mockReplyRepo = new ThreadCommentReplyRepository();
-        mockReplyRepo.addReply = jest.fn().mockImplementation(() =>
-            Promise.resolve(
-                new ThreadCommentReplyCreated({
-                    id: 'reply-123',
-                    content: 'thread comment reply content',
-                    owner: 'user-123',
-                }),
-            ),
-        );
-
-        const addReplyUseCase = new AddReplyUseCase({
-            threadRepository: mockThreadRepo,
-            commentRepository: mockCommentRepo,
-            replyRepository: mockReplyRepo,
-        });
-        const addedComment = await addReplyUseCase.execute(userId, threadId, commentId, content);
-
-        expect(mockThreadRepo.verifyThread).toBeCalledWith(threadId);
-        expect(mockCommentRepo.verifyComment).toBeCalledWith(commentId);
-        expect(mockReplyRepo.addReply).toBeCalledWith(userId, commentId, content);
-        expect(addedComment).toStrictEqual(expected);
+    const expected = new ThreadCommentReplyCreated({
+      id: 'reply-123',
+      content: 'thread comment reply content',
+      owner: 'user-123',
     });
+
+    const mockThreadRepo = new ThreadRepository();
+    mockThreadRepo.verifyThread = jest.fn().mockImplementation(() => Promise.resolve);
+
+    const mockCommentRepo = new ThreadCommentRepository();
+    mockCommentRepo.verifyComment = jest.fn().mockImplementation(() => Promise.resolve);
+
+    const mockReplyRepo = new ThreadCommentReplyRepository();
+    mockReplyRepo.addReply = jest.fn().mockImplementation(() =>
+      Promise.resolve(
+        new ThreadCommentReplyCreated({
+          id: 'reply-123',
+          content: 'thread comment reply content',
+          owner: 'user-123',
+        }),
+      ),
+    );
+
+    const addReplyUseCase = new AddReplyUseCase({
+      threadRepository: mockThreadRepo,
+      commentRepository: mockCommentRepo,
+      replyRepository: mockReplyRepo,
+    });
+    const addedComment = await addReplyUseCase.execute(userId, threadId, commentId, content);
+
+    expect(mockThreadRepo.verifyThread).toBeCalledWith(threadId);
+    expect(mockCommentRepo.verifyComment).toBeCalledWith(commentId);
+    expect(mockReplyRepo.addReply).toBeCalledWith(userId, commentId, content);
+    expect(addedComment).toStrictEqual(expected);
+  });
 });

@@ -1,46 +1,47 @@
 class GetThreadUseCase {
-    constructor({ threadRepository, commentRepository, replyRepository }) {
-        this._threadRepository = threadRepository;
-        this._commentRepository = commentRepository;
-        this._replyRepository = replyRepository;
-    }
+  constructor({ threadRepository, commentRepository, replyRepository }) {
+    this._threadRepository = threadRepository;
+    this._commentRepository = commentRepository;
+    this._replyRepository = replyRepository;
+  }
 
-    async execute(threadId) {
-        await this._threadRepository.verifyThread(threadId);
+  async execute(threadId) {
+    await this._threadRepository.verifyThread(threadId);
 
-        const thread = await this._threadRepository.getThread(threadId);
-        const comments = await this._commentRepository.getCommentsByThread(threadId);
+    const thread = await this._threadRepository.getThread(threadId);
+    const comments = await this._commentRepository.getCommentsByThread(threadId);
 
-        const commentIds = comments.map((comment) => comment.id);
-        const replies = await this._replyRepository.getRepliesByComment(commentIds);
+    const commentIds = comments.map((comment) => comment.id);
+    const replies = await this._replyRepository.getRepliesByComment(commentIds);
 
-        for (const comment of comments) {
-            const filteredReplies = replies.filter((reply) => reply.threadCommentId === comment.id);
+    for (let i = 0; i < comments.length; i += 1) {
+      const comment = comments[i];
+      const filteredReplies = replies.filter((reply) => reply.threadCommentId === comment.id);
 
-            const sensoredReplies = filteredReplies.map((reply) => {
-                const { isDeleted, ...rest } = reply;
-                if (isDeleted) {
-                    rest.content = '**balasan telah dihapus**';
-                };
-                return rest;
-            });
-
-            comment.replies = sensoredReplies;
+      const sensoredReplies = filteredReplies.map((reply) => {
+        const { isDeleted, ...rest } = reply;
+        if (isDeleted) {
+          rest.content = '**balasan telah dihapus**';
         }
+        return rest;
+      });
 
-        const sensoredComments = comments.map((c) => {
-            const { isDeleted, ...rest } = c;
-            if (isDeleted) {
-                rest.content = '**komentar telah dihapus**';
-            }
-
-            return rest;
-        });
-
-        thread.comments = sensoredComments;
-
-        return thread;
+      comment.replies = sensoredReplies;
     }
+
+    const sensoredComments = comments.map((c) => {
+      const { isDeleted, ...rest } = c;
+      if (isDeleted) {
+        rest.content = '**komentar telah dihapus**';
+      }
+
+      return rest;
+    });
+
+    thread.comments = sensoredComments;
+
+    return thread;
+  }
 }
 
 module.exports = GetThreadUseCase;

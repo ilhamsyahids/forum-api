@@ -5,84 +5,84 @@ const ThreadCommentCreated = require('../../Domains/threads/entities/ThreadComme
 const ThreadCommentRepository = require('../../Domains/threads/ThreadCommentRepository');
 
 class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
-    constructor(pool, idGenerator) {
-        super();
-        this._pool = pool;
-        this._idGenerator = idGenerator;
-    }
+  constructor(pool, idGenerator) {
+    super();
+    this._pool = pool;
+    this._idGenerator = idGenerator;
+  }
 
-    async addComment(userId, threadId, content) {
-        const id = `comment-${this._idGenerator()}`;
+  async addComment(userId, threadId, content) {
+    const id = `comment-${this._idGenerator()}`;
 
-        const query = {
-            text: `
+    const query = {
+      text: `
             INSERT INTO thread_comments
             VALUES ($1, $2, $3, $4)
             RETURNING id, content, user_id as "userId"
             `,
-            values: [id, content, threadId, userId],
-        };
+      values: [id, content, threadId, userId],
+    };
 
-        const result = await this._pool.query(query);
-        const comment = result.rows[0];
-        return new ThreadCommentCreated({
-            id: comment.id,
-            content: comment.content,
-            owner: comment.userId,
-        });
-    }
+    const result = await this._pool.query(query);
+    const comment = result.rows[0];
+    return new ThreadCommentCreated({
+      id: comment.id,
+      content: comment.content,
+      owner: comment.userId,
+    });
+  }
 
-    async deleteComment(id) {
-        const query = {
-            text: `
+  async deleteComment(id) {
+    const query = {
+      text: `
             UPDATE thread_comments
             SET is_deleted = true
             WHERE id = $1 AND is_deleted = false
             `,
-            values: [id],
-        };
+      values: [id],
+    };
 
-        const result = await this._pool.query(query);
-        return result.rowCount > 0;
-    }
+    const result = await this._pool.query(query);
+    return result.rowCount > 0;
+  }
 
-    async verifyComment(id) {
-        const query = {
-            text: `
+  async verifyComment(id) {
+    const query = {
+      text: `
             SELECT *
             FROM thread_comments
             WHERE id = $1 AND is_deleted = false
             `,
-            values: [id],
-        };
+      values: [id],
+    };
 
-        const result = await this._pool.query(query);
-        if (!result.rowCount) {
-            throw new NotFoundError('Comment tidak valid');
-        }
+    const result = await this._pool.query(query);
+    if (!result.rowCount) {
+      throw new NotFoundError('Comment tidak valid');
     }
+  }
 
-    async verifyCommentOwner(id, userId) {
-        const query = {
-            text: `
+  async verifyCommentOwner(id, userId) {
+    const query = {
+      text: `
             SELECT *
             FROM thread_comments
             WHERE id = $1 AND
             user_id = $2 AND
             is_deleted = false
             `,
-            values: [id, userId],
-        };
+      values: [id, userId],
+    };
 
-        const result = await this._pool.query(query);
-        if (!result.rowCount) {
-            throw new AuthorizationError('Comment hanya dapat dihapus oleh owner');
-        }
+    const result = await this._pool.query(query);
+    if (!result.rowCount) {
+      throw new AuthorizationError('Comment hanya dapat dihapus oleh owner');
     }
+  }
 
-    async getCommentsByThread(threadId) {
-        const query = {
-            text: `
+  async getCommentsByThread(threadId) {
+    const query = {
+      text: `
             SELECT
                 tc.id,
                 u.username,
@@ -94,22 +94,22 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentRepository {
             WHERE thread_id = $1
             ORDER BY tc.created_at asc
             `,
-            values: [threadId],
-        };
+      values: [threadId],
+    };
 
-        const result = await this._pool.query(query);
-        return result.rows.map(
-            (row) =>
-                new ThreadComment({
-                    id: row.id,
-                    username: row.username,
-                    date: row.date.toISOString(),
-                    content: row.content,
-                    isDeleted: row.is_deleted,
-                    replies: [],
-                }),
-        );
-    }
+    const result = await this._pool.query(query);
+    return result.rows.map(
+      (row) =>
+        new ThreadComment({
+          id: row.id,
+          username: row.username,
+          date: row.date.toISOString(),
+          content: row.content,
+          isDeleted: row.is_deleted,
+          replies: [],
+        }),
+    );
+  }
 }
 
 module.exports = ThreadCommentRepositoryPostgres;
