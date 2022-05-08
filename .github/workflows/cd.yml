@@ -15,6 +15,7 @@ jobs:
         with:
           image: ${{ secrets.DOCKER_IMAGE }}
           registry: docker.io
+          dockerfile: ../Dockerfile
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           build-args: |
