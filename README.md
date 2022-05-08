@@ -1,6 +1,7 @@
 # Forum API
 
 [![Continuous Integration](https://github.com/ilhamsyahids/forum-api/actions/workflows/ci.yml/badge.svg)](https://github.com/ilhamsyahids/forum-api/actions/workflows/ci.yml)
+[![Continuous Deployment](https://github.com/ilhamsyahids/forum-api/actions/workflows/cd.yml/badge.svg)](https://github.com/ilhamsyahids/forum-api/actions/workflows/cd.yml)
 
 ## Features
 
