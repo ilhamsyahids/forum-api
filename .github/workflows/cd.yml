@@ -1,0 +1,25 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Docker Build & Push
+        uses: mr-smithers-excellent/docker-build-push@v5
+        with:
+          image: ${{ secrets.DOCKER_IMAGE }}
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          build-args: |
+            PGPORT=${{ secrets.PGPORT }}
+            PGPASSWORD=${{ secrets.PGPASSWORD }}
+            PGUSER=${{ secrets.PGUSER }}
+            PGHOST=${{ secrets.PGHOST }}
+            PGDATABASE=${{ secrets.PGDATABASE }}

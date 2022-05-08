@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "forumapi", "-U", "postgres" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: forumapi
+    ports:
+      - "5433:5432"
+    networks:
+      - default
+
+  forum-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      HOST: 0.0.0.0
+      PORT: 5000
+
+      PGPORT: 5432
+      PGPASSWORD: root
+      PGUSER: postgres
+      PGHOST: postgres
+      PGDATABASE: forumapi
+
+      ACCESS_TOKEN_KEY: dummy
+      REFRESH_TOKEN_KEY: dummy
+      ACCCESS_TOKEN_AGE: 3000
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "5001:5000"
