@@ -20,6 +20,7 @@ describe('ThreadComment', () => {
       username: 'ilham',
       date: 123,
       isDeleted: 123,
+      likeCount: 'yes',
       replies: {},
     };
 
@@ -33,6 +34,7 @@ describe('ThreadComment', () => {
       username: 'ilham',
       date: new Date().toISOString(),
       isDeleted: true,
+      likeCount: 0,
       replies: [],
     };
 

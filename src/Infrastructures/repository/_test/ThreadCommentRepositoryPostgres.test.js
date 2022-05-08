@@ -115,6 +115,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
           content: 'content',
           date: nowDate.toISOString(),
           isDeleted: false,
+          likeCount: 0,
           replies: [],
         }),
       ];
@@ -129,6 +130,7 @@ describe('ThreadCommentRepositoryPostgres', () => {
       expect(comments[0].isDeleted).toEqual(expected[0].isDeleted);
       expect(comments[0].date).toBeDefined();
       expect(comments[0].replies).toHaveLength(expected[0].replies.length);
+      expect(comments[0].likeCount).toEqual(expected[0].likeCount);
     });
   });
 });

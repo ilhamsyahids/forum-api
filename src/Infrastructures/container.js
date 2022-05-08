@@ -23,6 +23,8 @@ const ThreadCommentRepository = require('../Domains/threads/ThreadCommentReposit
 const ThreadCommentRepositoryPostgres = require('./repository/ThreadCommentRepositoryPostgres');
 const ThreadCommentReplyRepository = require('../Domains/threads/ThreadCommentReplyRepository');
 const ThreadCommentReplyRepositoryPostgres = require('./repository/ThreadCommentReplyRepositoryPostgres');
+const ThreadCommentLikeRepository = require('../Domains/threads/ThreadCommentLikeRepository');
+const ThreadCommentLikeRepositoryPostgres = require('./repository/ThreadCommentLikeRepositoryPostgres');
 
 // use case
 const AddUserUseCase = require('../Applications/use_case/AddUserUseCase');
@@ -35,6 +37,7 @@ const AddCommentUseCase = require('../Applications/use_case/AddCommentUseCase');
 const DeleteCommentUseCase = require('../Applications/use_case/DeleteCommentUseCase');
 const AddReplyUseCase = require('../Applications/use_case/AddReplyUseCase');
 const DeleteReplyUseCase = require('../Applications/use_case/DeleteReplyUseCase');
+const LikesCommentUseCase = require('../Applications/use_case/LikesCommentUseCase');
 
 // creating container
 const container = createContainer();
@@ -126,6 +129,17 @@ container.register([
         },
         {
           concrete: nanoid,
+        },
+      ],
+    },
+  },
+  {
+    key: ThreadCommentLikeRepository.name,
+    Class: ThreadCommentLikeRepositoryPostgres,
+    parameter: {
+      dependencies: [
+        {
+          concrete: pool,
         },
       ],
     },
@@ -312,6 +326,27 @@ container.register([
         {
           name: 'replyRepository',
           internal: ThreadCommentReplyRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: LikesCommentUseCase.name,
+    Class: LikesCommentUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        },
+        {
+          name: 'commentRepository',
+          internal: ThreadCommentRepository.name,
+        },
+        {
+          name: 'likeRepository',
+          internal: ThreadCommentLikeRepository.name,
         },
       ],
     },

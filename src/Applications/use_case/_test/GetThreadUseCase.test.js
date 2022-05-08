@@ -14,6 +14,7 @@ describe('GetThreadUseCase', () => {
       id: 'comment-123',
       username: 'ilham',
       date: nowDate.toISOString(),
+      likeCount: 1,
       replies: [
         {
           id: 'reply-123',
@@ -37,6 +38,7 @@ describe('GetThreadUseCase', () => {
       id: 'comment-1234',
       username: 'ilham',
       date: nowDate.toISOString(),
+      likeCount: 0,
       replies: [
         {
           id: 'reply-12345',
@@ -94,6 +96,7 @@ describe('GetThreadUseCase', () => {
           date: nowDate.toISOString(),
           content: 'thread comment content',
           isDeleted: false,
+          likeCount: 1,
           replies: [],
         }),
         new ThreadComment({
@@ -102,6 +105,7 @@ describe('GetThreadUseCase', () => {
           date: nowDate.toISOString(),
           content: 'thread comment content kasar',
           isDeleted: true,
+          likeCount: 0,
           replies: [],
         }),
       ]),
