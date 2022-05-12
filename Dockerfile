@@ -10,7 +10,7 @@ COPY . .
 RUN npm install
 
 ARG HOST=0.0.0.0
-ARG PORT=5000
+ARG PORT=3000
 ARG PGPORT=5432
 ARG PGPASSWORD=root
 ARG PGUSER=postgres
@@ -39,6 +39,6 @@ COPY nginx/default.conf /etc/nginx/sites-enabled/default
 RUN chmod 777 /usr/local/bin/docker-entrypoint.sh && \
     ln -s usr/local/bin/docker-entrypoint.sh /
 
-EXPOSE 80 443 5000
+EXPOSE 80 443 3000
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD [ "npm", "start" ]
