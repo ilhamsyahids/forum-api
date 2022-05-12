@@ -1,4 +1,7 @@
-FROM node:12
+FROM node:14
+
+RUN apt-get update -y \
+    && apt-get install -y nginx
 
 WORKDIR /usr/src/app
 
@@ -32,9 +35,10 @@ RUN touch .env
 RUN printenv > .env
 
 COPY docker-entrypoint.sh /usr/local/bin/
+COPY nginx/default.conf /etc/nginx/sites-enabled/default
 RUN chmod 777 /usr/local/bin/docker-entrypoint.sh && \
     ln -s usr/local/bin/docker-entrypoint.sh /
 
+EXPOSE 80 443 5000
 ENTRYPOINT ["docker-entrypoint.sh"]
-EXPOSE 5000
 CMD [ "npm", "start" ]
